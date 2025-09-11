@@ -1,3 +1,5 @@
+//Nextjs is a edge time framework , process starts when required , all time running is not applicable in Nextjs framework
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
