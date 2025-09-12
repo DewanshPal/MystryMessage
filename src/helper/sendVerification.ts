@@ -1,4 +1,4 @@
-import {resend} from '@/lib/resend'
+import resend from '@/lib/resend'
 import VerificationEmail from '../../emailes/VerificationEmail'
 import { ApiResponse } from '@/types/apiResponse'
 
