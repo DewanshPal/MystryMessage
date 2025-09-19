@@ -41,7 +41,6 @@ const UserSchema: Schema<User> = new Schema({
     {
         type:String,
         required:[true,"Email is required"],
-        unique:true,
         //regex pattern for email address 
         match: [/.+\@.+\..+/, "please use a valid email address"]
 

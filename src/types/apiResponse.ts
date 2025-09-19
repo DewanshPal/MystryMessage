@@ -1,5 +1,5 @@
 import {Message} from '@/model/user.model'
-export interface ApiResponse<T> {
+export interface ApiResponse {
   success:boolean;
   message: string;
   isAcceptingMessage?: boolean;

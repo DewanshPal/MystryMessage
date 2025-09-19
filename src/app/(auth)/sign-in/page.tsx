@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 import {useState} from 'react'
-import { useDebounce } from "@uidotdev/usehooks";
+import { useDebounceCallback } from 'usehooks-ts'
 import { toast } from "sonner"
 import { useRouter } from 'next/navigation'
 import { signUpSchema } from '@/schemas/signUpSchema'
@@ -30,7 +30,7 @@ function page() {
   const [isLoading, setIsLoading] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const debouncedUsername = useDebounce(username, 300);
+  const debounced = useDebounceCallback(setUsername, 500);
 
   const router = useRouter();
 
@@ -47,12 +47,12 @@ function page() {
   useEffect(
     () => {
       const checkUsernameUnique = async () => {
-        if(debouncedUsername)
+        if(username)
         {
           setIsLoading(true);
           setUsernameMessage('')
           try{
-            const response = await axios.get(`/api/check-username-unique?username=${debouncedUsername}`)
+            const response = await axios.get(`/api/check-username-uniqueness?username=${username}`)
             setUsernameMessage(response.data.message) 
           } catch(error)
           {
@@ -68,7 +68,7 @@ function page() {
         }
       }
       checkUsernameUnique();
-    },[debouncedUsername]
+    },[username]
   )
 
   const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
@@ -116,7 +116,7 @@ function page() {
                     {...field}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                       field.onChange(e);
-                      setUsername(e.target.value);
+                      debounced(e.target.value);
                     }}
                   />
                   {isLoading && <Loader2 className="animate-spin" />}
