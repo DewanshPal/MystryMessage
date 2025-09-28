@@ -22,75 +22,43 @@ import { useRouter } from 'next/navigation'
 import { signUpSchema } from '@/schemas/signUpSchema'
 import { useEffect } from 'react'
 import { ApiResponse } from '@/types/apiResponse'
+import { signInSchema } from '@/schemas/signInSchema'
+import { signIn } from 'next-auth/react'
 
 
 function page() {
-  const [username, setUsername] = useState('')
-  const [usernameMessage, setUsernameMessage] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const debounced = useDebounceCallback(setUsername, 500);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
   //zod implementation
-  const register = useForm<z.infer<typeof signUpSchema>>({
-    resolver: zodResolver(signUpSchema),
+  const register = useForm<z.infer<typeof signInSchema>>({
+    resolver: zodResolver(signInSchema),
     defaultValues:{
-      username: '',
-      email: '',
+      identifier: '',
       password: ''
     }
   })
 
   useEffect(
     () => {
-      const checkUsernameUnique = async () => {
-        if(username)
-        {
-          setIsLoading(true);
-          setUsernameMessage('')
-          try{
-            const response = await axios.get(`/api/check-username-uniqueness?username=${username}`)
-            setUsernameMessage(response.data.message) 
-          } catch(error)
-          {
-            const axiosError = error as AxiosError<ApiResponse<null>>;
-            console.log(axiosError)
-            setUsernameMessage(
-              axiosError.response?.data.message ?? 'Error checking username'
-            );
-
-          } finally{
-            setIsLoading(false);
-          }
-        }
-      }
-      checkUsernameUnique();
-    },[username]
+      
+    },[]
   )
 
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
-    setIsSubmitting(true);
-    try {
-      const response = await axios.post<ApiResponse<null>>('/api/sign-up', data);
-
-      toast.success(response.data.message);
-
-      router.replace(`/verify/${username}`);
-
-      setIsSubmitting(false);
-    } catch (error) {
-      console.error('Error during sign-up:', error);
-
-      const axiosError = error as AxiosError<ApiResponse<null>>;
-
-      // Default error message
-      let errorMessage = axiosError.response?.data.message ?? 'There was a problem with your sign-up. Please try again.';
-
-      toast.error(errorMessage);
-      setIsSubmitting(false);
+  const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+   const result= await signIn('credentials',{
+      identifier : data.identifier,
+      password : data.password,
+      redirect : false
+    })
+    if(result?.error)
+    {
+      toast.error("Invalid credentials");
+    }
+    toast.success("Signed in successfully");
+    if(result?.url)
+    {
+      router.replace("/dashboard");
     }
   };
 
@@ -106,42 +74,14 @@ function page() {
         </div>
         <Form {...register}>
           <form onSubmit={register.handleSubmit(onSubmit)} className="space-y-6">
+           
             <FormField
-              name="username"
-              control={register.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <Input
-                    {...field}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                      field.onChange(e);
-                      debounced(e.target.value);
-                    }}
-                  />
-                  {isLoading && <Loader2 className="animate-spin" />}
-                  {!isLoading && usernameMessage && (
-                    <p
-                      className={`text-sm ${
-                        usernameMessage === 'Username is unique'
-                          ? 'text-green-500'
-                          : 'text-red-500'
-                      }`}
-                    >
-                      {usernameMessage}
-                    </p>
-                  )}
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              name="email"
+              name="identifier"
               control={register.control}
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-                  <Input {...field} name="email" />
+                  <Input {...field} name="identifier" />
                   <p className='text-muted text-sm'>We will send you a verification code</p>
                   <FormMessage />
                 </FormItem>
