@@ -5,15 +5,19 @@ import { User } from 'next-auth';
 import { Message } from '@/model/user.model';
 import { NextRequest } from 'next/server';
 import { authOptions } from '../../auth/[...nextauth]/options';
+import mongoose from 'mongoose';
 
 export async function DELETE(
   request: Request,
   { params }: { params: { messageid: string } }
 ) {
-  const messageId = params.messageid;
+  const paramsd = await params;
+  const messageId = paramsd?.messageid;
+  
   await dbConnect();
   const session = await getServerSession(authOptions);
   const _user: User = session?.user;
+  
   if (!session || !_user) {
     return Response.json(
       { success: false, message: 'Not authenticated' },
@@ -21,11 +25,30 @@ export async function DELETE(
     );
   }
 
+  console.log('Delete request for messageId:', messageId);
+  console.log('User ID:', _user.id);
+
   try {
+    // Convert messageId to ObjectId if it's a valid ObjectId string
+    let messageObjectId;
+    try {
+      messageObjectId = new mongoose.Types.ObjectId(messageId);
+    } catch (e) {
+      return Response.json(
+        { message: 'Invalid message ID format', success: false },
+        { status: 400 }
+      );
+    }
+
+    // Convert user ID to ObjectId - use _user.id (not _user._id)
+    const userId = new mongoose.Types.ObjectId(_user.id);
+
     const updateResult = await UserModel.updateOne(
-      { _id: _user._id },
-      { $pull: { messages: { _id: messageId } } }
+      { _id: userId },
+      { $pull: { message: { _id: messageObjectId } } }
     );
+
+    console.log('Update result:', updateResult);
 
     if (updateResult.modifiedCount === 0) {
       return Response.json(
