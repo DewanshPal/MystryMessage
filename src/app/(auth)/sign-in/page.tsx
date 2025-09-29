@@ -16,12 +16,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Loader2 } from 'lucide-react'
 import {useState} from 'react'
-import { useDebounceCallback } from 'usehooks-ts'
 import { toast } from "sonner"
 import { useRouter } from 'next/navigation'
-import { signUpSchema } from '@/schemas/signUpSchema'
 import { useEffect } from 'react'
-import { ApiResponse } from '@/types/apiResponse'
 import { signInSchema } from '@/schemas/signInSchema'
 import { signIn } from 'next-auth/react'
 
@@ -39,23 +36,19 @@ function page() {
     }
   })
 
-  useEffect(
-    () => {
-      
-    },[]
-  )
-
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
    const result= await signIn('credentials',{
       identifier : data.identifier,
       password : data.password,
       redirect : false
     })
-    if(result?.error)
-    {
-      toast.error("Invalid credentials");
+    if (result?.error) {
+      if (result.error === 'CredentialsSignin') {
+        toast.error('Invalid username or password');
+      } else {
+        toast.error(result.error);
+      }
     }
-    toast.success("Signed in successfully");
     if(result?.url)
     {
       router.replace("/dashboard");
@@ -70,7 +63,7 @@ function page() {
           <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
             Join True Feedback
           </h1>
-          <p className="mb-4">Sign up to start your anonymous adventure</p>
+          <p className="mb-4">Sign in to start your anonymous adventure</p>
         </div>
         <Form {...register}>
           <form onSubmit={register.handleSubmit(onSubmit)} className="space-y-6">
@@ -106,16 +99,16 @@ function page() {
                   Please wait
                 </>
               ) : (
-                'Sign Up'
+                'Sign In'
               )}
             </Button>
           </form>
         </Form>
         <div className="text-center mt-4">
           <p>
-            Already a member?{' '}
-            <Link href="/sign-in" className="text-blue-600 hover:text-blue-800">
-              Sign in
+            Not a member?{' '}
+            <Link href="/sign-up" className="text-blue-600 hover:text-blue-800">
+              Sign up
             </Link>
           </p>
         </div>

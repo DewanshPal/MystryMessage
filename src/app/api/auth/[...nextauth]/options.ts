@@ -3,7 +3,6 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import dbConnect from '@/lib/dbConnect';
 import UserModel from '@/model/user.model';
 import bcrypt from 'bcryptjs';
-import { is } from 'zod/locales';
 
 export const authOptions : NextAuthOptions = {
     providers:[
@@ -19,8 +18,8 @@ export const authOptions : NextAuthOptions = {
                 try{
                    const user = await UserModel.findOne({
                         $or:[
-                            {email:credentials.identifier.email},
-                            {username:credentials.identifier.username}
+                            {email:credentials.identifier},
+                            {username:credentials.identifier}
                         ]
                     })
 

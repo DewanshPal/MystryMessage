@@ -2,7 +2,7 @@ import resend from '@/lib/resend'
 import VerificationEmail from '../../emailes/VerificationEmail'
 import { ApiResponse } from '@/types/apiResponse'
 
-export async function sendVerificationEmail(username: string, email: string, verifyCode: string): Promise<ApiResponse<null>> {
+export async function sendVerificationEmail(username: string, email: string, verifyCode: string): Promise<ApiResponse> {
   try {
     await resend.emails.send({
       from: 'onboarding@resend.dev',

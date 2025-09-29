@@ -36,7 +36,7 @@ export default function VerifyPage()
             });
 
             toast.success(response.data.message);
-            router.push('/auth/sign-in');
+            router.push('/sign-in');
             
         } catch (error)
         {

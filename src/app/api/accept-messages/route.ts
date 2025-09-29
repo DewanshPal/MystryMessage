@@ -16,22 +16,21 @@ export async function POST(request: Request) {
     const userId = user.id;
     const { acceptMessage } = await request.json();
     try{
-        const updatedUser = await UserModel.findByIdAndUpdate(
-            userId,
-            { isAcceptingMessage: acceptMessage },
-            { new: true } //return the updated document
-        );
+        const existingUser = await UserModel.findById(userId);
 
-        if (!updatedUser) {
+        if (!existingUser) {
         // User not found
         return Response.json(
             {
             success: false,
-            message: 'Unable to find user to update message acceptance status',
+            message: 'Unable to find user to get message acceptance status',
             },
             { status: 404 }
         );
         }
+
+        existingUser.isAcceptingMessage = acceptMessage;
+        const updatedUser = await existingUser.save();
 
         return Response.json(
         {
@@ -79,7 +78,7 @@ export async function GET(request: Request) {
             { status: 404 }
         );
         }
-
+        
         return Response.json(
         {
             success: true,
