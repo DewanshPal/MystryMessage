@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         console.error('Could not parse error as JSON');
       }
       
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+      // throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
     }
 
     const data = await response.json();

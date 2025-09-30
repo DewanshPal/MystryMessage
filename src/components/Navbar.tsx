@@ -18,18 +18,18 @@ const Navbar=() => {
         <div>
             {session ? (
                 <div className='flex items-center space-x-4'>
-                    <span>Welcome, {user?.name || user?.email}</span>
+                    <span>Welcome, {user?.email}</span>
                     <button 
                         onClick={() => signOut()}
-                        className='bg-red-500 px-3 py-1 rounded hover:bg-red-600'
+                        className='bg-red-500 px-3 py-1 rounded hover:bg-red-600 cursor-pointer'
                     >
                         Sign Out
                     </button>
                 </div>
             ) : (
                 <div className='space-x-4'>
-                    <Link href='/sign-in' className='bg-blue-500 px-3 py-1 rounded hover:bg-blue-600'>Sign In</Link>
-                    <Link href='/sign-up' className='bg-green-500 px-3 py-1 rounded hover:bg-green-600'>Register</Link>
+                    <Link href='/sign-in' className='bg-blue-500 px-3 py-1 rounded hover:bg-blue-600 cursor-pointer'>Sign In</Link>
+                    <Link href='/sign-up' className='bg-green-500 px-3 py-1 rounded hover:bg-green-600 cursor-pointer'>Register</Link>
                 </div>
             )}
         </div>

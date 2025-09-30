@@ -21,6 +21,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { signInSchema } from '@/schemas/signInSchema'
 import { signIn } from 'next-auth/react'
+import AuthButton from '@/components/GoogleAuth'
 
 
 function page() {
@@ -92,7 +93,7 @@ function page() {
                 </FormItem>
               )}
             />
-            <Button type="submit" className='w-full' disabled={isSubmitting}>
+            <Button type="submit" className='w-full cursor-pointer' disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -104,6 +105,14 @@ function page() {
             </Button>
           </form>
         </Form>
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-t border-gray-300" />
+          <span className="mx-2 text-gray-500">or</span>
+          <hr className="flex-grow border-t border-gray-300" />
+        </div>
+        <div className="flex flex-col items-center">
+        <AuthButton />
+        </div>
         <div className="text-center mt-4">
           <p>
             Not a member?{' '}

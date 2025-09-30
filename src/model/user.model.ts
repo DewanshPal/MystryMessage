@@ -26,6 +26,7 @@ export interface User extends Document{
     verifyCodeExpiry:Date;
     isVerified:boolean;
     isAcceptingMessage:boolean;
+    googleSignIn:boolean;
     message:Message[]
 
 }
@@ -48,17 +49,25 @@ const UserSchema: Schema<User> = new Schema({
     password:
     {
         type:String,
-        required:[true,"Password is required"]
+        required: function () {
+            return !this.googleSignIn; // only required if NOT Google
+        },
+        default: ""
     },
     verifyCode:
     {
         type:String,
-        required:[true,"Verify Code is required"]
+        required: function () {
+            return !this.googleSignIn; // only required if NOT Google
+        },
+        default: ""
     },
     verifyCodeExpiry:
     {
         type:Date,
-        required:[true,"verify Code Expiry is required"]
+        required: function () {
+            return !this.googleSignIn; // only required if NOT Google
+        },
     },
     isVerified:
     {
@@ -69,6 +78,11 @@ const UserSchema: Schema<User> = new Schema({
     {
         type:Boolean,
         default:true
+    },
+    googleSignIn:
+    {
+        type: Boolean,
+        default: false, // will be true if user registers via Google
     },
     message: [MessageSchema]
 
